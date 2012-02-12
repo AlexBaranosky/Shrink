@@ -21,9 +21,14 @@
     [1 2]   [[1] [2] [0 2] [1 0] [1 1] [1 -1]]
 
     ;; lists
-    '()     '()
-    '(0)     '(())
-    '(1 2)   '( (1) (2) (0 2) (1 0) (1 1) (1 -1))
+    '()      []
+    '(0)     ['()]
+    '(1 2)   ['(1) '(2) '(0 2) '(1 0) '(1 1) '(1 -1)]
+
+    ;; sets
+    #{}      []
+    #{0}     [#{}]
+    #{1 2}   [#{1} #{2} #{0 2} #{1 0} #{1} #{1 -1} ]  ;; TODO - decide if we want to de-euplicate these results
 
     ;; seqs                                            
     (seq "a")     [[]]
@@ -49,9 +54,9 @@
     'abc    ['a 'bc]
     
     ;; TODO
-     #{1 2 3}         []
     {:a 1 :b 2}       []
-    (sorted-set #{})  []
+;    (sorted-set #{})  []
+    (sorted-set #{1 2 3})  (partial every? (complement sorted?))
     (sorted-map :a 1) []
     ;; (/ 79 77)      [] ;; ratios
     ;; 4.5            [] ;; floats
