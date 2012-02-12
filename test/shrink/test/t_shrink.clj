@@ -38,8 +38,12 @@
     "ab"     ["a" "b"]
     "abc"    ["a" "bc"]
     
+    ;; keywords
+    :a      [(keyword "")]  ;; TODO - consider if we'd prefer this to be []
+    :ab     [:a :b]
+    :abc    [:a :bc]
+    
     ;; TODO
-    :abc              []
     'abc              []
      #{1 2 3}         []
     {:a 1 :b 2}       []

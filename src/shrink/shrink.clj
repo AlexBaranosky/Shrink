@@ -10,6 +10,7 @@
                      (seq? x)    :seq
                      (number? x) :int
                      (string? x) :string
+                     (keyword? x) :keyword
                      )))
 
 (letfn [(remove-chunks [xs]
@@ -49,6 +50,9 @@
 
 (defmethod shrink :string [s]
   (map (partial apply str) (shrink (seq s))))
+
+(defmethod shrink :keyword [kw]
+  (map keyword (shrink (.substring (str kw) 1))))
 
 (letfn [(halfs [n] 
           (if (> 1 n) 
