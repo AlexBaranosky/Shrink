@@ -4,18 +4,22 @@
 (defmacro defmatch [name args & cases]
   `(defn ~name ~args
      (match ~args
-     ~@cases)))
+       ~@cases)))
 
 (defmacro defmethod-match [name dispatch-val args & cases]
   `(defmethod ~name ~dispatch-val ~args
      (match ~args
        ~@cases)))
 
-(defmulti shrink (constantly :int))
+(defmulti shrink (fn [x] 
+                   (if (integer? x) :int)))
 
 (defmatch halfs [n] 
-  [(x :when (partial > 1))]  []
-  [_]  (cons n (halfs (long (/ n 2)))))
+  [(_ :when (partial > 1))]  []
+  [_]                        (cons n (halfs (long (/ n 2)))))
+
+(defmethod shrink :default [_] 
+  [])
 
 (defmethod-match shrink :int [x]
   [0]  []
