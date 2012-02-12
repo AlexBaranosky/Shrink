@@ -16,10 +16,10 @@
                                     [xs1 xs2] [(take n1 xs) (drop n1 xs)]
                                     xs3 (for [ys1 (remove-chunks xs1)
                                               :when (seq ys1)]
-              (concat ys1 xs2))
+                                          (concat ys1 xs2))
                                     xs4 (for [ys2 (remove-chunks xs2)
                                               :when (seq ys2)]
-              (concat xs1 ys2))]
+                                          (concat xs1 ys2))]
                                 (list* xs1 xs2 (interleave xs3 xs4)))))
 
         (shrink-one [zs]
@@ -27,9 +27,9 @@
             (empty? zs) []
             :else       (let [[x & xs] zs
                               a (for [y (shrink x)]
-              (cons y xs))
+                                  (cons y xs))
                               b (for [ys (shrink-one xs)]
-              (cons x ys))]
+                                  (cons x ys))]
                           (concat a b))))
        
         (shrink-num [zero div x]

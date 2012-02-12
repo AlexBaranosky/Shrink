@@ -58,9 +58,6 @@
     (seq "abc")   [[\a] [\b \c]]
     (seq "abc")   (has every? seq?)
                                                          
-    ;; chars                                              
-    \c []                                                 
-                                                          
     ;; strings
     "a"      [""]
     "ab"     ["a" "b"]
@@ -75,6 +72,10 @@
     'a      [(symbol "")]   ;; TODO - consider if we'd prefer this to be []
     'ab     ['a 'b]
     'abc    ['a 'bc]
+
+    ;; other
+    \c   []
+    nil  [] 
     
     ;; TODO
     (sorted-map :a 1) []
