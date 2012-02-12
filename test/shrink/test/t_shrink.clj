@@ -50,7 +50,8 @@
     (sorted-set)  []
     (sorted-set 0)  [(sorted-set)]
     (sorted-set 1 2)  [(sorted-set 1) (sorted-set 2) (sorted-set 0 2) (sorted-set 1 0) (sorted-set 1) (sorted-set 1 -1)]
-    (sorted-set 1 2 3)  (has every? (every-pred sorted? set?))
+    (sorted-set 1 2 3)  (has every? sorted?)
+    (sorted-set 1 2 3)  (has every? set?)
 
     ;; seqs                                            
     (seq "a")     [[]]
