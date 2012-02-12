@@ -3,20 +3,8 @@
 (defn- long-div [& ns]
   (long (apply / ns)))
 
-(defmulti shrink (fn [x] 
-                   (cond
-                     (vector? x) :vector
-                     (list? x)   :list
-                     (and (sorted? x) (set? x)) :sorted-set
-                     (set? x)   :set
-                     (seq? x)    :seq
-                     (instance? java.lang.Double x) :double
-                     (ratio? x) :ratio
-                     (number? x) :int
-                     (string? x) :string
-                     (keyword? x) :keyword
-                     (symbol? x) :symbol
-                     )))
+(defprotocol Shrinkable
+  (shrink [x]))
 
 (letfn [(remove-chunks [xs]
           (cond
@@ -28,53 +16,23 @@
                                     [xs1 xs2] [(take n1 xs) (drop n1 xs)]
                                     xs3 (for [ys1 (remove-chunks xs1)
                                               :when (seq ys1)]
-                                           (concat ys1 xs2))
+              (concat ys1 xs2))
                                     xs4 (for [ys2 (remove-chunks xs2)
                                               :when (seq ys2)]
-                                           (concat xs1 ys2))]
+              (concat xs1 ys2))]
                                 (list* xs1 xs2 (interleave xs3 xs4)))))
 
-      (shrink-one [zs]
-        (cond
-          (empty? zs) []
-          :else       (let [[x & xs] zs
-                            a (for [y (shrink x)]
-                                (cons y xs))
-                            b (for [ys (shrink-one xs)]
-                                (cons x ys))]
-                        (concat a b))))]
-
-  (defmethod shrink :seq [xs]
-    (concat (remove-chunks xs) (shrink-one xs)))
-  
-  (defmethod shrink :list [xs]
-    (concat (remove-chunks xs) (shrink-one xs))))
-
-(defmethod shrink :vector [xs]
-  (map (partial apply vector) (shrink (seq xs))))
-
-(defmethod shrink :set [xs]
-  (map set (shrink (seq xs))))
-
-(defmethod shrink :sorted-set [xs]
-  (map (partial apply sorted-set) (shrink (seq xs))))
-
-(defmethod shrink :string [s]
-  (map (partial apply str) (shrink (seq s))))
-
-(defmethod shrink :keyword [kw]
-  (map keyword (shrink (.substring (str kw) 1))))
-
-(defmethod shrink :symbol [sym]
-  (map symbol (shrink (str sym))))
-
-(defmethod shrink :ratio [r]
-  (let [pos-version-of-ratio (if (neg? r) 
-                                [(* -1 r)] 
-                                []) ] 
-    (concat pos-version-of-ratio [(long r)] )))
-
-(letfn [(shrink-num [zero div x]
+        (shrink-one [zs]
+          (cond
+            (empty? zs) []
+            :else       (let [[x & xs] zs
+                              a (for [y (shrink x)]
+              (cons y xs))
+                              b (for [ys (shrink-one xs)]
+              (cons x ys))]
+                          (concat a b))))
+       
+        (shrink-num [zero div x]
           (letfn [(halfs [n]
                     (if (> 1 n)
                       []
@@ -85,10 +43,46 @@
                     negated-ns (map (partial * -1) ns)]
                 (cons zero (interleave ns negated-ns))))))]
 
-  (defmethod shrink :double [d]
-    (shrink-num 0.0 / d))
-  
-  (defmethod shrink :int [x]
-    (shrink-num 0 long-div x)))
+(extend-protocol Shrinkable
+  clojure.lang.IPersistentList
+  (shrink [xs] (concat (remove-chunks xs) (shrink-one xs)))
 
-(defmethod shrink :default [_] [])
+  clojure.lang.ISeq
+  (shrink [xs] (concat (remove-chunks xs) (shrink-one xs)))
+
+  clojure.lang.IPersistentVector
+  (shrink [xs] (map (partial apply vector) (shrink (seq xs))))
+
+  clojure.lang.PersistentTreeSet
+  (shrink [xs] (map (partial apply sorted-set) (shrink (seq xs))))
+
+  clojure.lang.PersistentHashSet
+  (shrink [xs] (map set (shrink (seq xs))))
+
+  java.lang.Double
+  (shrink [d] (shrink-num 0.0 / d))
+
+  java.lang.Long
+  (shrink [l] (shrink-num 0 long-div l))
+
+  clojure.lang.Ratio
+  (shrink [ratio]
+    (let [pos-version-of-ratio (if (neg? ratio)
+                                 [(* -1 ratio)]
+                                 []) ]
+      (concat pos-version-of-ratio [(long ratio)] )))
+
+  String
+  (shrink [s] (map (partial apply str) (shrink (seq s))))
+               
+  clojure.lang.Keyword
+  (shrink [kw] (map keyword (shrink (.substring (str kw) 1))))
+
+  clojure.lang.Symbol
+  (shrink [sym] (map symbol (shrink (str sym))))
+
+  Object
+  (shrink [_] [])
+
+  nil
+  (shrink [_] [])))
