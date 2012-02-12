@@ -7,6 +7,7 @@
                    (cond
                      (vector? x) :vector
                      (list? x)   :list
+                     (and (sorted? x) (set? x)) :sorted-set
                      (set? x)   :set
                      (seq? x)    :seq
                      (number? x) :int
@@ -46,12 +47,15 @@
   
   (defmethod shrink :list [xs]
     (concat (remove-chunks xs) (shrink-one xs)))
+
+  (defmethod shrink :seq [xs]
+    (concat (remove-chunks xs) (shrink-one xs)))
   
   (defmethod shrink :set [xs]
-    (map set (concat (remove-chunks (seq xs)) (shrink-one (seq xs)))))
+    (map set (shrink (seq xs))))
   
-  (defmethod shrink :seq [xs]
-    (concat (remove-chunks xs) (shrink-one xs))))
+  (defmethod shrink :sorted-set [xs]
+    (map (partial apply sorted-set) (shrink (seq xs)))))
 
 (defmethod shrink :string [s]
   (map (partial apply str) (shrink (seq s))))
