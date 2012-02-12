@@ -3,6 +3,9 @@
 (defn- long-div [& ns]
   (long (apply / ns)))
 
+(defn- int-div [& ns]
+  (int (apply / ns)))
+
 (defprotocol Shrinkable
   (shrink [x]))
 
@@ -64,6 +67,9 @@
 
   java.lang.Long
   (shrink [l] (shrink-num 0 long-div l))
+
+  java.lang.Integer
+  (shrink [i] (shrink-num 0 int-div i))
 
   clojure.lang.Ratio
   (shrink [ratio]
