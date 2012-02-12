@@ -42,9 +42,13 @@
     :a      [(keyword "")]  ;; TODO - consider if we'd prefer this to be []
     :ab     [:a :b]
     :abc    [:a :bc]
+
+    ;; symbols
+    'a      [(symbol "")]   ;; TODO - consider if we'd prefer this to be []
+    'ab     ['a 'b]
+    'abc    ['a 'bc]
     
     ;; TODO
-    'abc              []
      #{1 2 3}         []
     {:a 1 :b 2}       []
     (sorted-set #{})  []

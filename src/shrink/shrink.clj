@@ -11,6 +11,7 @@
                      (number? x) :int
                      (string? x) :string
                      (keyword? x) :keyword
+                     (symbol? x) :symbol
                      )))
 
 (letfn [(remove-chunks [xs]
@@ -53,6 +54,9 @@
 
 (defmethod shrink :keyword [kw]
   (map keyword (shrink (.substring (str kw) 1))))
+
+(defmethod shrink :symbol [sym]
+  (map symbol (shrink (str sym))))
 
 (letfn [(halfs [n] 
           (if (> 1 n) 
