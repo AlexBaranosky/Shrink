@@ -19,11 +19,13 @@
     []      []
     [0]     [[]]
     [1 2]   [[1] [2] [0 2] [1 0] [1 1] [1 -1]]
+    [1 2]   (has every? vector?)
 
     ;; lists
     '()      []
     '(0)     ['()]
     '(1 2)   ['(1) '(2) '(0 2) '(1 0) '(1 1) '(1 -1)]
+    '(1 2)   (has every? list?)
 
     ;; sets
     #{}      []
@@ -34,12 +36,13 @@
     (sorted-set)  []
     (sorted-set 0)  [(sorted-set)]
     (sorted-set 1 2)  [(sorted-set 1) (sorted-set 2) (sorted-set 0 2) (sorted-set 1 0) (sorted-set 1) (sorted-set 1 -1)]
-    (sorted-set 1 2 3)  (partial every? (every-pred sorted? set?))
+    (sorted-set 1 2 3)  (has every? (every-pred sorted? set?))
 
     ;; seqs                                            
     (seq "a")     [[]]
     (seq "ab")    [[\a] [\b]]
     (seq "abc")   [[\a] [\b \c]]
+    (seq "abc")   (has every? seq?)
                                                          
     ;; chars                                              
     \c []                                                 

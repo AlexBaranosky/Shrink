@@ -42,20 +42,20 @@
                                 (cons x ys))]
                         (concat a b))))]
 
-  (defmethod shrink :vector [xs]
-    (concat (remove-chunks xs) (shrink-one xs)))
-  
-  (defmethod shrink :list [xs]
-    (concat (remove-chunks xs) (shrink-one xs)))
-
   (defmethod shrink :seq [xs]
     (concat (remove-chunks xs) (shrink-one xs)))
   
-  (defmethod shrink :set [xs]
-    (map set (shrink (seq xs))))
-  
-  (defmethod shrink :sorted-set [xs]
-    (map (partial apply sorted-set) (shrink (seq xs)))))
+  (defmethod shrink :list [xs]
+    (concat (remove-chunks xs) (shrink-one xs))))
+
+(defmethod shrink :vector [xs]
+  (map (partial apply vector) (shrink (seq xs))))
+
+(defmethod shrink :set [xs]
+  (map set (shrink (seq xs))))
+
+(defmethod shrink :sorted-set [xs]
+  (map (partial apply sorted-set) (shrink (seq xs))))
 
 (defmethod shrink :string [s]
   (map (partial apply str) (shrink (seq s))))
