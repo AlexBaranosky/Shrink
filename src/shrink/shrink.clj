@@ -10,6 +10,7 @@
                      (and (sorted? x) (set? x)) :sorted-set
                      (set? x)   :set
                      (seq? x)    :seq
+                     (ratio? x) :ratio
                      (number? x) :int
                      (string? x) :string
                      (keyword? x) :keyword
@@ -65,6 +66,12 @@
 
 (defmethod shrink :symbol [sym]
   (map symbol (shrink (str sym))))
+
+(defmethod shrink :ratio [r]
+  (let [pos-version-of-ratio (if (neg? r) 
+                                [(* -1 r)] 
+                                []) ] 
+    (concat pos-version-of-ratio [(long r)] )))
 
 (letfn [(halfs [n] 
           (if (> 1 n) 
