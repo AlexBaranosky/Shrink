@@ -15,9 +15,13 @@
   (long (apply / ns)))
 
 (defmulti shrink (fn [x] 
-                   (cond 
+                   (cond
+                     (vector? x) :vector
+                     (list? x)   :list
+                     (seq? x)    :seq
                      (number? x) :int
-                     (vector? x)  :vector)))
+                     (string? x) :string
+                     )))
 
 (defn- remove-chunks [xs]
   (cond
@@ -48,6 +52,12 @@
 (defmethod shrink :vector [xs]
   (concat (remove-chunks xs) (shrink-one xs)))
 
+(defmethod shrink :list [xs]
+  (concat (remove-chunks xs) (shrink-one xs)))
+
+(defmethod shrink :seq [xs]
+  (concat (remove-chunks xs) (shrink-one xs)))
+
 (defn- halfs [n] 
   (if (> 1 n) 
     []
@@ -58,5 +68,8 @@
   [_]  (let [ns (map #(- x %) (halfs (long-div x 2)))
              negated-ns (map (partial * -1) ns)]
          (cons 0 (interleave ns negated-ns))))
+
+(defmethod shrink :string [s]
+  (map (partial apply str) (shrink (seq s))))
 
 (defmethod shrink :default [_] [])

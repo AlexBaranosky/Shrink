@@ -20,17 +20,23 @@
     [0]     [[]]
     [1 2]   [[1] [2] [0 2] [1 0] [1 1] [1 -1]]
 
-    ;; chars
-    \c []      
-    
+    ;; lists
+    '()     '()
+    '(0)     '(())
+    '(1 2)   '( (1) (2) (0 2) (1 0) (1 1) (1 -1))
+
+    ;; seqs                                            
+    (seq "a")     [[]]
+    (seq "ab")    [[\a] [\b]]
+    (seq "abc")   [[\a] [\b \c]]
+                                                         
+    ;; chars                                              
+    \c []                                                 
+                                                          
     ;; strings
-    [\a]        [[]]
-    [\a \b]     [[\a] [\b]]
-    [\a \b \c]  [[\a] [\b \c]]
-  
-    ;; can't shrink things it doesn't understand
-    (Foo.) []
-    \z     []
+    "a"      [""]
+    "ab"     ["a" "b"]
+    "abc"    ["a" "bc"]
     
     ;; TODO
     :abc              []
@@ -39,6 +45,9 @@
     {:a 1 :b 2}       []
     (sorted-set #{})  []
     (sorted-map :a 1) []
-    '(1 2 3)          []
-    ;; 4.5            []
+    ;; (/ 79 77)      [] ;; ratios
+    ;; 4.5            [] ;; floats
+
+    ;; can't shrink things it doesn't understand
+    (Foo.) []
   )
