@@ -6,11 +6,18 @@
      (match ~args
      ~@cases)))
 
+(defmacro defmethod-match [name dispatch-val args & cases]
+  `(defmethod ~name ~dispatch-val ~args
+     (match ~args
+       ~@cases)))
+
+(defmulti shrink (constantly :int))
+
 (defmatch halfs [n] 
   [(x :when (partial > 1))]  []
   [_]  (cons n (halfs (long (/ n 2)))))
 
-(defmatch shrink [x]
+(defmethod-match shrink :int [x]
   [0]  []
   [_]  (let [ns (map #(- x %) (halfs (long (/ x 2))))
              negated-ns (map (partial * -1) ns)]
