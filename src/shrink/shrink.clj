@@ -10,6 +10,7 @@
                      (and (sorted? x) (set? x)) :sorted-set
                      (set? x)   :set
                      (seq? x)    :seq
+                     (instance? java.lang.Double x) :double
                      (ratio? x) :ratio
                      (number? x) :int
                      (string? x) :string
@@ -73,16 +74,21 @@
                                 []) ] 
     (concat pos-version-of-ratio [(long r)] )))
 
-(letfn [(halfs [n] 
-          (if (> 1 n) 
-            []
-            (cons n (halfs (long-div n 2)))))]
+(letfn [(shrink-num [zero div x]
+          (letfn [(halfs [n]
+                    (if (> 1 n)
+                      []
+                      (cons n (halfs (div n 2)))))]
+            (if (= x zero)
+              []
+              (let [ns (map #(- x %) (halfs (div x 2)))
+                    negated-ns (map (partial * -1) ns)]
+                (cons zero (interleave ns negated-ns))))))]
 
+  (defmethod shrink :double [d]
+    (shrink-num 0.0 / d))
+  
   (defmethod shrink :int [x]
-    (if (= x 0)
-      []
-      (let [ns (map #(- x %) (halfs (long-div x 2)))
-            negated-ns (map (partial * -1) ns)]
-        (cons 0 (interleave ns negated-ns))))))
+    (shrink-num 0 long-div x)))
 
 (defmethod shrink :default [_] [])
