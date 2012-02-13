@@ -9,21 +9,23 @@
 (defprotocol Shrinkable
   (shrink [x]))
 
+(defn- halve [xs]
+  (let [length (count xs)
+        n1 (long-div length 2)]
+    [(take n1 xs) (drop n1 xs)]))
+
 (letfn [(remove-chunks [xs]
           (cond
             (empty? xs)       []
             (= 1 (count xs))  [[]]
-            :else             (let [length (count xs)
-                                    n1 (long-div length 2)
-                                    n2 (- length n1)
-                                    [xs1 xs2] [(take n1 xs) (drop n1 xs)]
-                                    xs3 (for [ys1 (remove-chunks xs1)
-                                              :when (seq ys1)]
-                                          (concat ys1 xs2))
-                                    xs4 (for [ys2 (remove-chunks xs2)
-                                              :when (seq ys2)]
-                                          (concat xs1 ys2))]
-                                (list* xs1 xs2 (interleave xs3 xs4)))))
+            :else             (let [[fst-half scd-half] (halve xs)
+                                    xs3 (for [x (remove-chunks fst-half)
+                                              :when (seq x)]
+                                          (concat x scd-half))
+                                    xs4 (for [x (remove-chunks scd-half)
+                                              :when (seq x)]
+                                          (concat fst-half x))]
+                                (list* fst-half scd-half (interleave xs3 xs4)))))
 
         (shrink-one [zs]
           (cond
