@@ -62,16 +62,16 @@
   clojure.lang.PersistentHashSet
   (shrink [xs] (map set (shrink (seq xs))))
 
-  java.lang.Float
+  Float
   (shrink [f] (shrink-num 0.0 / f))
 
-  java.lang.Double
+  Double
   (shrink [d] (shrink-num 0.0 / d))
 
-  java.lang.Long
+  Long
   (shrink [l] (shrink-num 0 long-div l))
 
-  java.lang.Integer
+  Integer
   (shrink [i] (shrink-num 0 int-div i))
 
   clojure.lang.Ratio
