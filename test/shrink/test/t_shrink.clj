@@ -22,6 +22,11 @@
     3.0    [0.0 1.5 -1.5]     
     4.0    [0.0 2.0 -2.0 3.0 -3.0]
 
+    ;; floats
+    (float 0)  []
+    (float 1)  [(float 0)]
+    (float 2)  [(float 0) (float 1) (float -1)] 
+
     ;; ratios
     (/ 1 2)     [0]
     (/ 15 8)    [1]

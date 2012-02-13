@@ -62,6 +62,9 @@
   clojure.lang.PersistentHashSet
   (shrink [xs] (map set (shrink (seq xs))))
 
+  java.lang.Float
+  (shrink [f] (shrink-num 0.0 / f))
+
   java.lang.Double
   (shrink [d] (shrink-num 0.0 / d))
 
