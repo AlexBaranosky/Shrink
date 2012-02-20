@@ -87,7 +87,7 @@
   (shrink [s] (map (partial apply str) (shrink (seq s))))
                
   clojure.lang.Keyword
-  (shrink [kw] (map keyword (shrink (.substring (str kw) 1))))
+  (shrink [kw] (map keyword (shrink (name kw))))
 
   clojure.lang.Symbol
   (shrink [sym] (map symbol (shrink (str sym))))
